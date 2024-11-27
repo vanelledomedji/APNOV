@@ -1,0 +1,101 @@
+<mat-card class="cardWithShadow theme-card">
+  <mat-card-header>
+    <mat-card-title class="m-b-0">Gestion Des Comptes OTP</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="b-t-1">
+    <div class="row">
+      <div class="col-sm-6 col-lg-4">
+        <button
+        mat-flat-button
+        color="primary"
+        class="m-t-8"
+      >
+        Ajouter un compte OTP
+      </button>
+      </div>
+  
+
+      <div class="col-12">
+        <mat-card-content>  
+          <div class="table-responsive">
+            <table mat-table [dataSource]="accounts" class="w-100">
+              
+              <!-- Nom de l'EMF -->
+              <ng-container matColumnDef="emfName">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14 p-l-0">
+                  Nom de l'EMF
+                </th>
+                <td mat-cell *matCellDef="let element" class="p-l-0">
+                  {{ element.emfName }}
+                </td>
+              </ng-container>
+      
+              <!-- Numéro de l'EMF -->
+              <ng-container matColumnDef="emfCode">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                  Numéro de l'EMF
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.emfCode }}
+                </td>
+              </ng-container>
+
+              <!-- Nombre de Chiffres -->
+              <ng-container matColumnDef="numberOfDigits">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                  Nombre de Chiffres
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.numberOfDigits }}
+                </td>
+              </ng-container>
+
+              <!-- Durée de Vie -->
+              <ng-container matColumnDef="lifetime">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                  Durée de Vie
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.lifetime }}
+                </td>
+              </ng-container>
+
+              <!-- Login Serveur -->
+              <ng-container matColumnDef="serverLogin">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                  Login Serveur
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.serverLogin }}
+                </td>
+              </ng-container>
+      
+              <!-- Mot de Passe du Serveur -->
+              <ng-container matColumnDef="serverPassword">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                  Mot de Passe du Serveur
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.serverPassword }}
+                </td>
+              </ng-container>
+      
+              <!-- Début du Message -->
+              <ng-container matColumnDef="messageStart">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+                  Début de Message
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.messageStart }}
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+        </mat-card-content>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

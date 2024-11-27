@@ -1,0 +1,98 @@
+<mat-card class="cardWithShadow theme-card">
+  <mat-card-header>
+    <mat-card-title class="m-b-0">Consulter Opérations</mat-card-title>
+  </mat-card-header>
+
+
+    <mat-card-content>
+      <h2>Liste des Opérations</h2>
+      <div class="table-responsive">
+        <table mat-table [dataSource]="operations" class="w-100">
+  
+          <!-- Nom de l'EMF -->
+          <ng-container matColumnDef="emfName">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+              Nom de l'EMF
+            </th>
+            <td mat-cell *matCellDef="let operation">
+              {{ operation.emfName }}
+            </td>
+          </ng-container>
+  
+          <!-- Numéro -->
+          <ng-container matColumnDef="number">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+              Numéro
+            </th>
+            <td mat-cell *matCellDef="let operation">
+              {{ operation.number }}
+            </td>
+          </ng-container>
+  
+          <!-- Date de Validation -->
+          <ng-container matColumnDef="validationDate">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+              Date de Validation
+            </th>
+            <td mat-cell *matCellDef="let operation">
+              {{ operation.validationDate | date:'short' }}
+            </td>
+          </ng-container>
+  
+          <!-- Date de Dernière Tentative -->
+          <ng-container matColumnDef="lastAttemptDate">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+              Date de Dernière Tentative
+            </th>
+            <td mat-cell *matCellDef="let operation">
+              {{ operation.lastAttemptDate | date:'short' }}
+            </td>
+          </ng-container>
+  
+          <!-- Nombre de Tentatives -->
+          <ng-container matColumnDef="attemptCount">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+              Nombre de Tentatives
+            </th>
+            <td mat-cell *matCellDef="let operation">
+              {{ operation.attemptCount }}
+            </td>
+          </ng-container>
+  
+          <!-- Date de Création -->
+          <ng-container matColumnDef="creationDate">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+              Date de Création
+            </th>
+            <td mat-cell *matCellDef="let operation">
+              {{ operation.creationDate | date:'short' }}
+            </td>
+          </ng-container>
+  
+          <!-- Date d'Expiration -->
+          <ng-container matColumnDef="expirationDate">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+              Date d'Expiration
+            </th>
+            <td mat-cell *matCellDef="let operation">
+              {{ operation.expirationDate | date:'short' }}
+            </td>
+          </ng-container>
+  
+          <!-- Nom de l'Application -->
+          <ng-container matColumnDef="applicationName">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14">
+              Nom de l'Application
+            </th>
+            <td mat-cell *matCellDef="let operation">
+              {{ operation.applicationName }}
+            </td>
+          </ng-container>
+  
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+
+</mat-card>
