@@ -11,6 +11,7 @@ import { NavService } from '../../../../services/nav.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { MaterialModule } from 'src/app/material.module';
 import { CommonModule } from '@angular/common';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-nav-item',
@@ -20,6 +21,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: [],
 })
 export class AppNavItemComponent implements OnChanges {
+
   @Output() toggleMobileLink: any = new EventEmitter<void>();
   @Output() notify: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -27,7 +29,7 @@ export class AppNavItemComponent implements OnChanges {
   @Input() item: NavItem | any;
   @Input() depth: any;
 
-  constructor(public navService: NavService, public router: Router) {
+  constructor(public navService: NavService, public router: Router, private authService: AuthService) {
     if (this.depth === undefined) {
       this.depth = 0;
     }
@@ -51,4 +53,13 @@ export class AppNavItemComponent implements OnChanges {
   onSubItemSelected(item: NavItem) {
     
   }
+
+  handleAction(item: any): void {
+    if (item.action === 'logout') {
+      this.authService.logout(); // Appeler la méthode de déconnexion
+    } else {
+      // Gérer les autres actions ou redirections si nécessaire
+    }
+  }
+
 }

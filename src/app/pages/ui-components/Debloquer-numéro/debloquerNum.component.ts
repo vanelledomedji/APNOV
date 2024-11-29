@@ -21,14 +21,14 @@ import { CommonModule } from '@angular/common';
 })
 
 
-
-
 export class AppDebloquerNumComponent implements OnInit {
 
   emfList: any[] = []; 
   selectedEMF: any; 
-  phoneNumber: string = '';
+  recipient: string = '';
   accounts: any[] = []; 
+
+  errorMessage: string = ''; 
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -37,7 +37,7 @@ export class AppDebloquerNumComponent implements OnInit {
   }
 
   loadEmfs() {
-    this.authService.getEmfs().subscribe(
+    this.authService.getAllEmf().subscribe(
       (data) => {
         this.emfList = data; 
       },
@@ -49,11 +49,11 @@ export class AppDebloquerNumComponent implements OnInit {
 
   onEmfSelect(event: any) {
     this.selectedEMF = event.value; 
-    this.loadAccountsForEmf(this.selectedEMF.emfCode); 
+    this.loadAccountsForEmf(); 
   }
 
-  loadAccountsForEmf(emfCode: string) {
-    this.authService.getEmfs().subscribe(
+  loadAccountsForEmf() {
+    this.authService.getAllEmf().subscribe(
       (accounts) => {
         this.accounts = accounts; // Stocke les comptes dans une variable
         console.log('Comptes récupérés:', accounts);
@@ -65,12 +65,14 @@ export class AppDebloquerNumComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
+    this.errorMessage = '';
     if (form.valid) {
-      this.authService.unlockRecipient(this.selectedEMF.name, this.selectedEMF.code).subscribe(
+      this.authService.unlockRecipient(this.recipient, this.selectedEMF.code).subscribe(
         response => {
           console.log('Utilisateur débloqué avec succès', response);
         },
         error => {
+          this.errorMessage = 'Compte introuvable'; 
           console.error('Erreur lors du déblocage de l\'utilisateur', error);
         }
       );

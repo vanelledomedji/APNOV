@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { finalize } from 'rxjs/operators';
+import { LoaderService } from 'src/app/services/loader.service';
+import { Router } from '@angular/router';
+
 
 @Injectable({
   providedIn: 'root'
@@ -8,10 +12,10 @@ import { Observable } from 'rxjs';
 export class AuthService {
   private apiUrl = 'http://196.202.235.196:7018/digibank-payment-agregator-gateway/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private loaderService: LoaderService, private router: Router) {}
 
   // Se connecter
-  login(username: string, password: string): Observable<any> {
+  login(username: string, password: string): Observable<any> { 
     const body = {
       username: username,
       password: password,
@@ -25,7 +29,7 @@ export class AuthService {
     sessionStorage.setItem('username', username);
     sessionStorage.setItem('password', password);
 
-    return this.http.post(`${this.apiUrl}/otp-login`, body, { headers });
+    return this.http.post(`${this.apiUrl}/otp-login`, body, { headers }); 
   }
 
 
@@ -51,7 +55,7 @@ export class AuthService {
 
     const body = {
       recipient: recipient,
-      emfCode: emfCode,
+      code: emfCode,
     };
 
     const headers = new HttpHeaders({
@@ -82,7 +86,7 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/otp-changePasswordAccount`, body, { headers });
   }
 
-  // Méthode pour lister tous les comptes OTP
+  // Méthode pour lister tous les comptes utilisateurs
   getAllAccounts(): Observable<any[]> {
     const username = sessionStorage.getItem('username');
     const password = sessionStorage.getItem('password');
@@ -95,7 +99,50 @@ export class AuthService {
     return this.http.get<any[]>(`${this.apiUrl}/otp-account`, { headers });
   }
 
-  // Méthode pour récupérer toutes les opérations avec Basic Auth
+
+  // Méthode pour créer  les comptes utilisateurs
+  createAccounts(
+    name: string,
+    accountUsername: string,
+    accountType: string,
+    emf: string[] = [],
+    userPassword: string
+  ): Observable<any[]> {
+    const username = sessionStorage.getItem('username');
+    const password = sessionStorage.getItem('password');
+
+    const account = {
+      name,              
+      username: accountUsername,
+      accountType,
+      emf, 
+      password: userPassword, 
+    };
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + btoa(`${username}:${password}`) // Authentification Basic
+    });
+
+    return this.http.post<any[]>(`${this.apiUrl}/otp-account`, account, { headers });
+  }
+
+   // Méthode pour mettre à jour les comptes utilisateur
+   updateAccount(account: any): Observable<any> {
+    const username = sessionStorage.getItem('username');
+    const password = sessionStorage.getItem('password');
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + btoa(`${username}:${password}`)
+    });
+
+    return this.http.put(`${this.apiUrl}/otp-account`, account, { headers });
+  }
+
+
+
+  // Méthode pour récupérer toutes les opérations avec 
   getAllOperations(): Observable<any[]> {
     const username = sessionStorage.getItem('username');
     const password = sessionStorage.getItem('password');
@@ -107,7 +154,6 @@ export class AuthService {
 
     return this.http.get<any[]>(`${this.apiUrl}/otp-list`, { headers });
   }
-
 
   // Méthode pour récupérer les comptes OTP
   getAllEmf(): Observable<any[]> {
@@ -122,10 +168,55 @@ export class AuthService {
     return this.http.get<any[]>(`${this.apiUrl}/otp-emf`, { headers });
   }
 
+  // Méthode pour créer les comptes OTP
+  createEmf(
+    name: string,
+    code: string,
+    otpDigitCount: number,
+    otpExpirationDelay: number,
+    loginSmsServer: string,
+    passwordSmsServer: string,
+    otpMessageFormat: string,
+    
+  ): Observable<any> {
+    const username = sessionStorage.getItem('username');
+    const password = sessionStorage.getItem('password');
+
+    const data = {
+      name,              
+      code,              
+      otpDigitCount, 
+      otpExpirationDelay,             
+      loginSmsServer,       
+      passwordSmsServer,  
+      otpMessageFormat 
+    };
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + btoa(`${username}:${password}`)
+    });
+
+    return this.http.post(`${this.apiUrl}/otp-emf`, data, { headers });
+  }
+
+   // Méthode pour mettre à jour les comptes otp
+  updateEmf(emf: any): Observable<any> {
+    const username = sessionStorage.getItem('username');
+    const password = sessionStorage.getItem('password');
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + btoa(`${username}:${password}`)
+    });
+
+    return this.http.put(`${this.apiUrl}/otp-emf`, emf, { headers });
+  }
 
   // Déconnexion
   logout(): void {
     sessionStorage.removeItem('username');
     sessionStorage.removeItem('password');
+    this.router.navigate(['/connexion']); // Rediriger vers la page de connexion
   }
 }

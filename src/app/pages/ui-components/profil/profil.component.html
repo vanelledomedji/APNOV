@@ -1,4 +1,12 @@
 <mat-card class="cardWithShadow theme-card">
+
+  <div *ngIf="message" class="alert alert-success">
+    {{ message }}
+    <!-- <button type="button" class="close" aria-label="Close"  (click)="closeAlert()">
+      <span inert="true">&times;</span>
+    </button> -->
+  </div>
+
   <mat-card-header>
     <mat-card-title class="m-b-0">Profil</mat-card-title>
   </mat-card-header>
@@ -36,7 +44,7 @@
         <button mat-flat-button color="primary" type="submit">Changer le mot de passe</button>
       </form> -->
 
-      <form (ngSubmit)="changePassword()">
+      <form #passwordChangeForm="ngForm" (ngSubmit)="passwordChange(passwordChangeForm)" novalidate>
         <mat-label class="f-w-600 m-b-8 d-block">Nom d'utilisateur</mat-label>
           <mat-form-field appearance="outline" class="w-100" color="primary">
             <input matInput id="username" type="text" class="form-control" [(ngModel)]="username" name="username"/>
@@ -45,7 +53,7 @@
         <mat-label class="f-w-600 m-b-8 d-block">Ancien mot de passe</mat-label>
           <mat-form-field appearance="outline" class="w-100" color="primary">
             <input matInput [type]="showOldPassword ? 'text' : 'password'"    id="oldPassword" class="form-control" required [(ngModel)]="oldPassword" name="oldPassword"/>
-            <button mat-icon-button matSuffix (click)="toggleOldPasswordVisibility()">
+            <button mat-icon-button matSuffix (click)="toggleOldPasswordVisibility()" type="button">
               <mat-icon>{{ showOldPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
           </mat-form-field>
@@ -53,7 +61,7 @@
         <mat-label class="f-w-600 m-b-8 d-block">Nouveau mot de passe</mat-label>
           <mat-form-field appearance="outline" class="w-100" color="primary">
             <input matInput [type]="showNewPassword ? 'text' : 'password'"  id="newPassword" class="form-control" required [(ngModel)]="newPassword" name="newPassword"/>
-            <button mat-icon-button matSuffix (click)="toggleNewPasswordVisibility()">
+            <button mat-icon-button matSuffix (click)="toggleNewPasswordVisibility()" type="button">
               <mat-icon>{{ showNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
           </mat-form-field>
@@ -61,10 +69,15 @@
         <mat-label class="f-w-600 m-b-8 d-block">Confirmer nouveau mot de passe</mat-label>
           <mat-form-field appearance="outline" class="w-100" color="primary">
             <input matInput [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" class="form-control" required [(ngModel)]="confirmPassword" name="confirmPassword"/>
-            <button mat-icon-button matSuffix (click)="toggleConfirmPasswordVisibility()">
+            <button mat-icon-button matSuffix (click)="toggleConfirmPasswordVisibility()" type="button">
               <mat-icon>{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
           </mat-form-field>
+
+          <!-- Affichage du message d'erreur -->
+          <div *ngIf="errorMessage" style="color: red; margin-top: 10px;">
+            {{ errorMessage }}
+          </div><br>
 
         <button mat-flat-button color="primary" type="submit">Changer le mot de passe</button>
       </form>

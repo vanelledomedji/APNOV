@@ -9,10 +9,11 @@
         mat-flat-button
         color="primary"
         class="m-t-8"
+        (click)="openModal()"
       >
         Ajouter un compte OTP
       </button>
-      </div>
+    </div>
   
 
       <div class="col-12">
@@ -90,6 +91,16 @@
                 </td>
               </ng-container>
 
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 mat-subtitle-1 f-s-14" >
+                  Actions
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  <button mat-button color="primary" class="m-t-8" (click)="editElement(element)" ><mat-icon>edit</mat-icon></button>
+                </td>
+              </ng-container>
+    
+
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
             </table>
@@ -98,4 +109,164 @@
       </div>
     </div>
   </mat-card-content>
+
 </mat-card>
+
+<ng-template #modalTemplate>
+  <div mat-dialog-title style="display: flex; justify-content: space-between; align-items: center;">
+    <h2 color="primary">Ajouter un compte OTP</h2>
+    <button mat-icon-button (click)="onCancel()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div><br>
+  <mat-dialog-content>
+    <form #onCreateUserForm="ngForm" (ngSubmit)="onCreateUser(onCreateUserForm)" novalidate>
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nom de l'EMF</mat-label>
+            <input matInput [(ngModel)]="name" name="name" required />
+          </mat-form-field>
+        </div>
+    
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Code de l'EMF</mat-label>
+            <input matInput [(ngModel)]="code" name="code" required />
+          </mat-form-field>
+        </div>
+      </div>
+    
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nombre de chiffres</mat-label>
+            <input matInput type="number" [(ngModel)]="otpDigitCount" name="otpDigitCount" required />
+          </mat-form-field>
+        </div>
+    
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Login du serveur de messagerie</mat-label>
+            <input matInput [(ngModel)]="loginSmsServer" name="loginSmsServer" required />
+          </mat-form-field>
+        </div>
+      </div>
+    
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Mot de passe du serveur de messagerie</mat-label>
+            <input matInput [(ngModel)]="passwordSmsServer" name="passwordSmsServer" type="password" required />
+          </mat-form-field>
+        </div>
+    
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Début du message</mat-label>
+            <input matInput [(ngModel)]="otpMessageFormat" name="otpMessageFormat" required />
+          </mat-form-field>
+        </div>
+      </div>
+    
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Date d'expiration de l'OTP en minutes:</mat-label>
+            <input matInput type="number" [(ngModel)]="otpExpirationDelay" name="otpExpirationDelay" required />
+          </mat-form-field>
+        </div>
+      </div>
+    
+      <!-- Affichage du message d'erreur -->
+      <div *ngIf="errorMessage" style="color: red; margin-top: 10px;">
+        {{ errorMessage }}
+      </div><br>
+    
+      <div class="modal-footer" style="display: flex; justify-content: center; align-items: center;">
+        <button mat-button (click)="onCancel()" color="warn">ANNULER</button>
+        <button mat-raised-button color="primary" type="submit">Créer</button>
+      </div>
+    </form>
+  </mat-dialog-content>
+</ng-template>
+
+
+<ng-template #editModalTemplate>
+  <div mat-dialog-title style="display: flex; justify-content: space-between; align-items: center;">
+    <h2 color="primary">Modifier le compte OTP</h2>
+    <button mat-icon-button (click)="onCancel()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div><br>
+  <mat-dialog-content>
+    <form #editUserForm="ngForm" (ngSubmit)="updateEmf()" novalidate>
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nom de l'EMF</mat-label>
+            <input matInput [(ngModel)]="selectedAccount.emfName" name="emfName" required />
+          </mat-form-field>
+        </div>
+    
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Code de l'EMF</mat-label>
+            <input matInput [(ngModel)]="selectedAccount.emfCode" name="emfCode" required />
+          </mat-form-field>
+        </div>
+      </div>
+    
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nombre de chiffres</mat-label>
+            <input matInput type="number" [(ngModel)]="selectedAccount.numberOfDigits" name="numberOfDigits" required />
+          </mat-form-field>
+        </div>
+    
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Login du serveur de messagerie</mat-label>
+            <input matInput [(ngModel)]="selectedAccount.serverLogin" name="serverLogin" required />
+          </mat-form-field>
+        </div>
+      </div>
+    
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Mot de passe du serveur de messagerie</mat-label>
+            <input matInput [(ngModel)]="selectedAccount.serverPassword" name="serverPassword" type="password" required />
+          </mat-form-field>
+        </div>
+    
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Début du message</mat-label>
+            <input matInput [(ngModel)]="selectedAccount.messageStart" name="messageStart" required />
+          </mat-form-field>
+        </div>
+      </div>
+    
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Date d'expiration de l'OTP en minutes:</mat-label>
+            <input matInput type="number" [(ngModel)]="selectedAccount.lifetime" name="otpExpirationDelay" required />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" style="color: red; margin-top: 10px;">
+        {{ errorMessage }}
+      </div><br>
+    
+      <div class="modal-footer" style="display: flex; justify-content: center; align-items: center;">
+        <button mat-button (click)="onCancel()" color="warn">ANNULER</button>
+        <button mat-raised-button color="primary" type="submit">Modifier</button>
+      </div>
+    </form>
+  </mat-dialog-content>
+</ng-template>
+

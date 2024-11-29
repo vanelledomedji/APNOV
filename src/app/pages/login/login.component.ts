@@ -8,12 +8,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from 'src/app/services/auth.service';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [MatFormFieldModule, FormsModule, MatButtonModule, MatIconModule, MatCardModule, MatInputModule, MatBadgeModule],
+  imports: [MatFormFieldModule, FormsModule, MatButtonModule, MatIconModule, MatCardModule, MatInputModule, MatBadgeModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -22,6 +23,8 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
   showPassword: boolean = false;
+
+  errorMessage: string = ''; 
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -53,6 +56,7 @@ export class LoginComponent {
   // }
 
   onSubmit(form: NgForm) {
+    this.errorMessage = '';
     if (form.valid) {
       this.authService.login(this.username, this.password).subscribe(
         response => {
@@ -65,8 +69,8 @@ export class LoginComponent {
           this.router.navigate(['/dashboard']);
         },
         error => {
+          this.errorMessage = 'Echec d\'authentification'; 
           console.error('Erreur de connexion', error);
-          // Gérer l'erreur ici (afficher un message d'erreur, etc.)
           alert('Échec de la connexion, veuillez vérifier vos identifiants.');
         }
       );

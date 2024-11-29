@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { BlankComponent } from './layouts/blank/blank.component';
 import { FullComponent } from './layouts/full/full.component';
 import { LoginComponent } from './pages/login/login.component';
+import { adminGuard } from './guards/admin-guard.guard';
 
 export const routes: Routes = [
 
@@ -18,19 +19,22 @@ export const routes: Routes = [
   {
     path: '',
     component: FullComponent,
+    canActivate: [adminGuard],
     children: [
-      // {
-      //   path: '',
-      //   redirectTo: 'dashboard',
-      //   pathMatch: 'full',
-      // },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+
       {
         path: 'dashboard',
         loadChildren: () =>
           import('./pages/pages.routes').then((m) => m.PagesRoutes),
       },
       {
-        path: 'ui-components',
+        path: 'pages',
+        canActivate: [adminGuard],
         loadChildren: () =>
           import('./pages/ui-components/ui-components.routes').then(
             (m) => m.UiComponentsRoutes
@@ -44,8 +48,6 @@ export const routes: Routes = [
     ],
   },
 
-
-  
 
 
   {

@@ -19,6 +19,9 @@
               <mat-icon> {{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
           </mat-form-field>
+          <div *ngIf="errorMessage" style="color: red; margin-top: 10px;">
+            {{ errorMessage }}
+          </div><br>
           <button mat-flat-button color="primary" type="submit">Se connecter</button>
       </form>
     </mat-card-content>
