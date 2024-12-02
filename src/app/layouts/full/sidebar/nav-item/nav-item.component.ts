@@ -40,7 +40,12 @@ export class AppNavItemComponent implements OnChanges {
   }
 
   onItemSelected(item: NavItem) {
-    this.router.navigate([item.route]);
+    if (item.action === 'logout') {
+      this.authService.logout(); // Appeler la méthode de déconnexion
+    } else {
+      this.router.navigate([item.route]);
+    }
+
 
     //scroll
     window.scroll({

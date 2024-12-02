@@ -16,6 +16,10 @@ import { NgForm, FormGroup,Validators, FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon'; // Pour mat-icon
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { LoaderService } from 'src/app/services/loader.service'; 
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+
 
 @Component({
   selector: 'app-gestionCompteAdmin',
@@ -27,7 +31,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     ReactiveFormsModule,
     CdkScrollable,
     MatButtonModule,
-    MatTooltipModule, MatCardModule, MatInputModule, MatCheckboxModule, CommonModule, MatTableModule, MatIconModule, MatDialogModule, MatSelectModule 
+    MatTooltipModule, MatCardModule, MatInputModule, MatCheckboxModule, CommonModule, MatTableModule, MatIconModule, MatDialogModule, MatSelectModule,  MatSnackBarModule ,MatProgressBarModule 
   ],
   templateUrl: './gestionCompteAdmin.component.html',
 })
@@ -38,20 +42,23 @@ export class AppGestionCompteAdminComponent implements OnInit {
     'username',          // Login
     'status',            // Statut
     'role',              // Rôle
-    'emf',          // Nom de l'EMF
+    'emfs',          // Nom de l'EMF
     'actions'
   ];
   selectedAccount: any;
 
+  errorMessage1: string = '';
   errorMessage: string = '';
   accounts: any[] = []; // Tableau pour stocker les comptes
   form: FormGroup;
-
+  
+  id: string=''
   name: string=''
+  username: string=''
   accountUsername: string=''
   active: string=''
   accountType: string=''
-  emf: string[] = []
+  emfs: string[] = []
   userPassword: string='';
 
   emfList: any[] = []; 
@@ -63,15 +70,16 @@ export class AppGestionCompteAdminComponent implements OnInit {
   @ViewChild('modalTemplate') modalTemplate: TemplateRef<any>;
   @ViewChild('editModalTemplate') editModalTemplate: TemplateRef<any>;
 
-  constructor(private authService: AuthService, private fb: FormBuilder, private dialog: MatDialog) {
+  constructor(private authService: AuthService, private fb: FormBuilder, private dialog: MatDialog, private snackBar: MatSnackBar, public  loaderService: LoaderService) {
     this.form = this.fb.group({
       name: ['', Validators.required],
       accountUsername: ['', Validators.required],
       userPassword: ['', Validators.required],
       accountType: ['', Validators.required],
-      emf: ['', Validators.required],
+      emfs: ['', Validators.required],
     });
   }
+
 
   editElement(element: any) {
     if (!element) {
@@ -118,6 +126,11 @@ export class AppGestionCompteAdminComponent implements OnInit {
   ngOnInit() {
     this.loadAccounts();
     this.loadEmfs();
+
+    // Initialiser selectedEMF si nécessaire
+    if (this.emfList.length > 0) {
+      this.selectedEMF = this.emfList[0]; // Sélectionner le premier EMF par défaut
+    }
   }
 
 
@@ -134,7 +147,7 @@ export class AppGestionCompteAdminComponent implements OnInit {
 
   onEmfSelect(event: any) {
     this.selectedEMF = event.value; 
-    this.loadAccountsForEmf(); 
+    // this.loadAccountsForEmf(); 
   }
 
   loadAccountsForEmf() {
@@ -150,19 +163,23 @@ export class AppGestionCompteAdminComponent implements OnInit {
   }
 
   loadAccounts() {
+    this.loaderService.show(); // Afficher le loader
     this.authService.getAllAccounts().subscribe(
       (data) => {
         this.accounts = data.map(account => ({
+          id: account.id,
           name: account.name,
           username: account.username,
           status: account.active,
           role: account.accountType,
-          emfName: account.emf,
+          emfNames: account.emfs.map((emf: { name: any; }) => emf.name).join(', '), 
         }));
         console.log('Comptes récupérés:', this.accounts);
+        this.loaderService.hide(); // Masquer le loader
       },
       (error: HttpErrorResponse) => {
         console.error('Erreur lors du chargement des comptes', error);
+        this.loaderService.hide(); // Masquer le loader
       }
     );
   }
@@ -173,15 +190,19 @@ export class AppGestionCompteAdminComponent implements OnInit {
       this.errorMessage = 'Tous les champs sont requis.';
       return;
     }
+
     this.authService.createAccounts(
       this.name,              
       this.accountUsername,               
       this.accountType,             
-      this.emf,
+      this.emfs,
       this.userPassword,        
-    ).subscribe(
+    ).subscribe( 
       response => {
         console.log('Utilisateur créé:', response);
+        this.snackBar.open('utilisateur créé avec succès', 'Fermer', {
+          duration: 5000, // Durée en millisecondes
+        });
         // Gérer la redirection ou afficher un message de succès
       },
       error => {
@@ -191,30 +212,34 @@ export class AppGestionCompteAdminComponent implements OnInit {
     );
   }
 
+
   updateAccount() {
-    // Préparez l'objet à envoyer à l'API
+    console.log('Selected Account:', this.selectedAccount); // Ajoutez ce log pour le débogage
+
+
     const updatedAccount = {
-      id: this.selectedAccount.id, // Assurez-vous d'avoir l'ID du compte
-      name: this.selectedAccount.name,
-      username: this.selectedAccount.username,
-      status: this.selectedAccount.status,
-      role: this.selectedAccount.role,
-      emfName: this.selectedAccount.emfName,
+        password: this.userPassword, 
+        accountType: this.selectedAccount.role, 
+        name: this.selectedAccount.name,
+        active: this.selectedAccount.status,
+        emfNames: this.selectedAccount.emfNames,
+        username: this.selectedAccount.username, 
+        id: this.selectedAccount.id
     };
-  
-    // Appelez le service pour mettre à jour le compte
+
     this.authService.updateAccount(updatedAccount).subscribe(
-      response => {
-        console.log('Compte mis à jour avec succès:', response);
-        this.loadAccounts(); // Rechargez les comptes après la mise à jour
-        this.dialog.closeAll(); // Fermer le modal après la mise à jour
-      },
-      error => {
-        console.error('Erreur lors de la mise à jour du compte:', error);
-        this.errorMessage = 'Erreur de mise à jour. Veuillez réessayer.';
-      }
+        response => {
+            console.log('Compte mis à jour avec succès:', response);
+            this.loadAccounts(); // Rechargez les comptes après la mise à jour
+            this.snackBar.open('Compte mis à jour avec succès', 'Fermer', {
+                duration: 5000,
+            });
+        },
+        error => {
+            console.error('Erreur lors de la mise à jour du compte:', error);
+            this.errorMessage = 'Erreur de mise à jour. Veuillez réessayer.';
+        }
     );
   }
-
 }
 

@@ -14,15 +14,21 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgForm, FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { LoaderService } from 'src/app/services/loader.service';
+import { MatProgressBarModule } from '@angular/material/progress-bar'; 
 
 @Component({
   selector: 'app-gestionCompteOTP',
   standalone: true,
-  imports: [MatCardModule, MatMenuModule, MatIconModule, TablerIconsModule, MatButtonModule, MatTableModule, MaterialModule, MatDialogModule, CommonModule, FormsModule],
+  imports: [MatCardModule, MatMenuModule, MatIconModule, TablerIconsModule, MatButtonModule, MatTableModule, MaterialModule, MatDialogModule, CommonModule, FormsModule, MatFormFieldModule, MatInputModule,  MatSnackBarModule, MatProgressBarModule],
   templateUrl: './gestionCompteOTP.component.html',
 })
 export class AppGestionCompteOTPComponent {
-
+  
+  id: string=''
   name: string=''
   code: string=''
   otpDigitCount: number= 0
@@ -45,22 +51,42 @@ export class AppGestionCompteOTPComponent {
   ];
 
   selectedAccount: any;
+  selectedAccountId: string;
+
+  
+  filteredAccounts: any[] = [];
+  filterEmfName: string = '';
 
   accounts: any[] = [];
   form: FormGroup;
+
+  value: string = '';
 
   
 
   @ViewChild('modalTemplate') modalTemplate: TemplateRef<any>;
   @ViewChild('editModalTemplate') editModalTemplate: TemplateRef<any>;
+  @ViewChild('deleteModalTemplate') deleteModalTemplate: TemplateRef<any>;
 
-  constructor(private authService: AuthService, private router: Router, private fb: FormBuilder, private dialog: MatDialog) {
+  constructor(private authService: AuthService, private router: Router, private fb: FormBuilder, private dialog: MatDialog, private snackBar: MatSnackBar, public  loaderService: LoaderService) {
     this.form = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
     });
+
+    this.loadAccount();
   }
 
+  loadAccount() {
+    // Votre logique pour charger les comptes
+    this.filteredAccounts = this.accounts; // Initialisez également filteredAccounts
+  }
+
+  filterByEmfName() {
+    this.filteredAccounts = this.accounts.filter(account => 
+      account.emfName.toLowerCase().includes(this.filterEmfName.toLowerCase())
+    );
+  }
 
   editElement(element: any) {
     if (!element) {
@@ -80,7 +106,7 @@ export class AppGestionCompteOTPComponent {
     });
   }
 
-  
+
   openModal() {
     const dialogRef = this.dialog.open(this.modalTemplate, {
       width: '600px',
@@ -104,6 +130,28 @@ export class AppGestionCompteOTPComponent {
     this.dialog.closeAll(); // Fermer le modal sans traitement
   }
 
+  openDeleteModal(element: any) {
+    if (!element) {
+        console.error('Aucun élément sélectionné');
+        return;
+    }
+
+    // Stockez l'ID de l'élément sélectionné
+    this.selectedAccountId = element.id; // Assurez-vous que l'élément a un champ 'id'
+    this.selectedAccount = { ...element }; 
+
+    const dialogRef = this.dialog.open(this.deleteModalTemplate, {
+        width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+            console.log('Suppression annulée');
+        } 
+    });
+}
+
+
   
 
   ngOnInit() {
@@ -111,8 +159,8 @@ export class AppGestionCompteOTPComponent {
   }
 
   loadAccounts() {
+    this.loaderService.show(); // Afficher le loader
     this.authService.getAllEmf().subscribe(
-
       (data) => {
         console.log('Données reçues:', data); 
         this.accounts = data.map(account => ({
@@ -124,10 +172,14 @@ export class AppGestionCompteOTPComponent {
           serverPassword: account.passwordSmsServer,  
           messageStart: account.otpMessageFormat       
         }));
+
         console.log('Comptes récupérés:', this.accounts); 
+        this.filteredAccounts = this.accounts;
+        this.loaderService.hide(); // Masquer le loader
       },
       (error: HttpErrorResponse) => {
         console.error('Erreur lors du chargement des comptes', error);
+        this.loaderService.hide(); // Masquer le loader en cas d'erreur
       }
     );
   }
@@ -148,6 +200,9 @@ export class AppGestionCompteOTPComponent {
     ).subscribe(
       response => {
         console.log('Utilisateur créé:', response);
+        this.snackBar.open('Utilisateur créé avec succès', 'Fermer', {
+          duration: 5000, // Durée en millisecondes
+        });
         // Gérer la redirection ou afficher un message de succès
       },
       error => {
@@ -175,6 +230,9 @@ export class AppGestionCompteOTPComponent {
       response => {
         console.log('EMF mis à jour avec succès:', response);
         this.loadAccounts();
+        this.snackBar.open('Mise à jour réuissi', 'Fermer', {
+          duration: 5000, // Durée en millisecondes
+        });
       },
       error => {
         console.error('Erreur lors de la mise à jour de l\'EMF:', error);
@@ -183,5 +241,20 @@ export class AppGestionCompteOTPComponent {
     );
   }
 
+  deleteEmf() {
+    this.authService.deleteEmf().subscribe(
+      response => {
+        console.log('Compte supprimé avec succès:', response);
+        this.loadAccounts(); // Rechargez les comptes après suppression
+        this.snackBar.open('suppréssion réuissie', 'Fermer', {
+          duration: 5000, // Durée en millisecondes
+        });
+      },
+      error => {
+        console.error('Erreur lors de la suppression du compte:', error);
+        this.errorMessage = 'Erreur de suppression. Veuillez réessayer.';
+      }
+    );
+  }
 
 }

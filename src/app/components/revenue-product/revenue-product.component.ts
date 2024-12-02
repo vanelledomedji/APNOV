@@ -19,8 +19,8 @@ const ELEMENT_DATA: productsData[] = [
   {
     id: 1,
     imagePath: 'assets/images/products/dash-prd-1.jpg',
-    uname: 'Minecraf App',
-    position: 'Jason Roy',
+    uname: 'Projet 1',
+    position: 'Test',
     skills: '3.5',
     hrate: 73.2,
     priority: 'Low',
@@ -29,8 +29,8 @@ const ELEMENT_DATA: productsData[] = [
   {
     id: 2,
     imagePath: 'assets/images/products/dash-prd-2.jpg',
-    uname: 'Web App Project',
-    position: 'Mathew Flintoff',
+    uname: 'Projet 2',
+    position: 'En production',
     skills: '3.5',
     hrate: 73.2,
     priority: 'Medium',
@@ -39,8 +39,8 @@ const ELEMENT_DATA: productsData[] = [
   {
     id: 3,
     imagePath: 'assets/images/products/dash-prd-3.jpg',
-    uname: 'Modernize Dashboard',
-    position: 'Anil Kumar',
+    uname: 'Projet 3',
+    position: 'En attente',
     skills: '3.5',
     hrate: 73.2,
     priority: 'Very High',
@@ -49,8 +49,8 @@ const ELEMENT_DATA: productsData[] = [
   {
     id: 4,
     imagePath: 'assets/images/products/dash-prd-4.jpg',
-    uname: 'Dashboard Co',
-    position: 'George Cruize',
+    uname: 'Projet 4',
+    position: 'En attente',
     skills: '3.5',
     hrate: 73.2,
     priority: 'High',

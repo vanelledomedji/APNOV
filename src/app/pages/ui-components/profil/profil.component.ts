@@ -10,13 +10,16 @@ import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common'; 
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoaderService } from 'src/app/services/loader.service';
+
 
 @Component({
   selector: 'app-profil',
   templateUrl: './profil.component.html',
   standalone: true,
-  imports: [MatBadgeModule, MatButtonModule, MatIconModule, MatCardModule, FormsModule,MatFormFieldModule, MatInputModule, FormsModule, CommonModule, MatSnackBarModule],
+  imports: [MatBadgeModule, MatButtonModule, MatIconModule, MatCardModule, FormsModule,MatFormFieldModule, MatInputModule, FormsModule, CommonModule, MatSnackBarModule,],
 })
 
 
@@ -40,7 +43,7 @@ export class AppProfilComponent implements OnInit {
     this.message = '';
   }
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {}
 
@@ -56,6 +59,7 @@ export class AppProfilComponent implements OnInit {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
+  
 
 
   passwordChange(form: NgForm) {
@@ -68,6 +72,9 @@ export class AppProfilComponent implements OnInit {
       this.authService.changePassword(this.oldPassword, this.newPassword).subscribe(
         response => {
           console.log('mot de passe changé', response);
+          this.snackBar.open('Mot de passe changé avec succès', 'Fermer', {
+            duration: 5000, // Durée en millisecondes
+          });
           this.message = 'Mot de passe changé avec succès';
         },
         (error: HttpErrorResponse) => {

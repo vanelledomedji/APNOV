@@ -1,12 +1,4 @@
 <mat-card class="cardWithShadow theme-card">
-
-  <div *ngIf="message" class="alert alert-success">
-    {{ message }}
-    <!-- <button type="button" class="close" aria-label="Close"  (click)="closeAlert()">
-      <span inert="true">&times;</span>
-    </button> -->
-  </div>
-
   <mat-card-header>
     <mat-card-title class="m-b-0">Profil</mat-card-title>
   </mat-card-header>
@@ -15,35 +7,6 @@
   <mat-card class="b-1 shadow-none">
     <mat-card-content>
       <h2>Changer le mot de passe</h2>
-
-      <!-- <form (ngSubmit)="changePassword()">
-        <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input matInput [type]="showOldPassword ? 'text' : 'password'" id="oldPassword" [(ngModel)]="oldPassword" required />
-          <button mat-icon-button matSuffix (click)="toggleOldPasswordVisibility()">
-            <mat-icon>{{ showOldPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-          <mat-label>Ancien mot de passe</mat-label>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input matInput [type]="showNewPassword ? 'text' : 'password'" id="newPassword" [(ngModel)]="newPassword" required />
-          <button mat-icon-button matSuffix (click)="toggleNewPasswordVisibility()">
-            <mat-icon>{{ showNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-          <mat-label>Nouveau mot de passe</mat-label>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-100" color="primary">
-          <input matInput [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" [(ngModel)]="confirmPassword" required />
-          <button mat-icon-button matSuffix (click)="toggleConfirmPasswordVisibility()">
-            <mat-icon>{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-          <mat-label>Confirmer nouveau mot de passe</mat-label>
-        </mat-form-field>
-
-        <button mat-flat-button color="primary" type="submit">Changer le mot de passe</button>
-      </form> -->
-
       <form #passwordChangeForm="ngForm" (ngSubmit)="passwordChange(passwordChangeForm)" novalidate>
         <mat-label class="f-w-600 m-b-8 d-block">Nom d'utilisateur</mat-label>
           <mat-form-field appearance="outline" class="w-100" color="primary">

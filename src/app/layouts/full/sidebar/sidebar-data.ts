@@ -51,7 +51,7 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Deconnexion',
     iconName: 'solar:login-3-line-duotone',
-    route: '/connexion',
+    action: 'logout',
   },
  
 ];

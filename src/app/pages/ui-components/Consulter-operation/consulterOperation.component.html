@@ -1,13 +1,41 @@
+<div *ngIf="loaderService.loading$ | async" class="loader">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</div>
 <mat-card class="cardWithShadow theme-card">
   <mat-card-header>
     <mat-card-title class="m-b-0">Consulter Opérations</mat-card-title>
   </mat-card-header>
 
-
     <mat-card-content>
       <h2>Liste des Opérations</h2>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <div style="display: flex; gap: 16px;">
+          <mat-form-field appearance="fill">
+            <mat-label>Date de Début</mat-label>
+            <input matInput [matDatepicker]="startDatePicker" [(ngModel)]="startDate" (dateChange)="filterByCreationDate()">
+            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #startDatePicker></mat-datepicker>
+          </mat-form-field>
+          
+          <mat-form-field appearance="fill">
+            <mat-label>Date de Fin</mat-label>
+            <input matInput [matDatepicker]="endDatePicker" [(ngModel)]="endDate" (dateChange)="filterByCreationDate()">
+            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #endDatePicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <mat-paginator [length]="filteredOperations.length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[5, 10, 25, 100]"
+          (page)="onPageChange($event)"
+          aria-label="Select page">
+        </mat-paginator>
+      </div>
+
+
       <div class="table-responsive">
-        <table mat-table [dataSource]="operations" class="w-100">
+        <table mat-table [dataSource]="paginatedOperations" class="w-100">
   
           <!-- Nom de l'EMF -->
           <ng-container matColumnDef="emfName">

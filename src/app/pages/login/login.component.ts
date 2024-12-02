@@ -9,12 +9,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from 'src/app/services/auth.service';
 import { CommonModule } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoaderService } from 'src/app/services/loader.service';
 
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [MatFormFieldModule, FormsModule, MatButtonModule, MatIconModule, MatCardModule, MatInputModule, MatBadgeModule, CommonModule],
+  imports: [MatFormFieldModule, FormsModule, MatButtonModule, MatIconModule, MatCardModule, MatInputModule, MatBadgeModule, CommonModule, MatProgressSpinnerModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -30,30 +32,16 @@ export class LoginComponent {
     this.showPassword = !this.showPassword;
   }
 
-  constructor(private authService: AuthService, private router: Router) {}
+  isLoading: boolean = false;
 
+  constructor(private authService: AuthService, private loaderService: LoaderService, private router: Router) {}
 
-  // onSubmit(form: NgForm) {
-  //   if (form.valid) {
-  //     this.authService.login(this.username, this.Password).subscribe(
-  //       response => {
-  //         console.log('Connexion réussie', response);
-  
-          
-  //         if (response.token) {
-  //           // Stocker le token dans localStorage
-  //           localStorage.setItem('authToken', response.token);
-  //         }
-  //         this.router.navigate(['/dashboard']);
-  //       },
-  //       error => {
-  //         console.error('Erreur de connexion', error);
-  //         // Gérer l'erreur ici (afficher un message d'erreur, etc.)
-  //         alert('Échec de la connexion, veuillez vérifier vos identifiants.');
-  //       }
-  //     );
-  //   }
-  // }
+  ngOnInit() {
+    // S'abonner à l'état de chargement du service de loader
+    this.loaderService.loading$.subscribe(loading => {
+      this.isLoading = loading;
+    });
+  }
 
   onSubmit(form: NgForm) {
     this.errorMessage = '';
@@ -71,7 +59,6 @@ export class LoginComponent {
         error => {
           this.errorMessage = 'Echec d\'authentification'; 
           console.error('Erreur de connexion', error);
-          alert('Échec de la connexion, veuillez vérifier vos identifiants.');
         }
       );
     }

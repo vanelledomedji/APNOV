@@ -15,23 +15,36 @@ export class AuthService {
   constructor(private http: HttpClient, private loaderService: LoaderService, private router: Router) {}
 
   // Se connecter
+  // login(username: string, password: string): Observable<any> { 
+  //   const body = {
+  //     username: username,
+  //     password: password,
+  //   };
+
+  //   const headers = new HttpHeaders({
+  //     'Content-Type': 'application/json',
+  //   });
+  //   sessionStorage.setItem('username', username);
+  //   sessionStorage.setItem('password', password);
+
+  //   return this.http.post(`${this.apiUrl}/otp-login`, body, { headers }); 
+  // }
+
+
   login(username: string, password: string): Observable<any> { 
-    const body = {
-      username: username,
-      password: password,
-    };
+    const body = { username, password };
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-    });
-
-    // Stocker les informations d'identification dans sessionStorage
     sessionStorage.setItem('username', username);
     sessionStorage.setItem('password', password);
 
-    return this.http.post(`${this.apiUrl}/otp-login`, body, { headers }); 
+    // Afficher le loader
+    this.loaderService.show();
+    
+    return this.http.post(`${this.apiUrl}/otp-login`, body, { headers }).pipe(
+      finalize(() => this.loaderService.hide()) // Cacher le loader à la fin de l'appel
+    );
   }
-
 
   // Obtenir les EMFs
   getEmfs(): Observable<any[]> {
@@ -105,7 +118,7 @@ export class AuthService {
     name: string,
     accountUsername: string,
     accountType: string,
-    emf: string[] = [],
+    emfs: string[] = [],
     userPassword: string
   ): Observable<any[]> {
     const username = sessionStorage.getItem('username');
@@ -115,7 +128,7 @@ export class AuthService {
       name,              
       username: accountUsername,
       accountType,
-      emf, 
+      emfs, 
       password: userPassword, 
     };
 
@@ -211,6 +224,19 @@ export class AuthService {
     });
 
     return this.http.put(`${this.apiUrl}/otp-emf`, emf, { headers });
+  }
+
+  // Méthode pour supprimer les comptes otp
+  deleteEmf(): Observable<any> {
+    const username = sessionStorage.getItem('username');
+    const password = sessionStorage.getItem('password');
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + btoa(`${username}:${password}`)
+    });
+
+    return this.http.delete(`${this.apiUrl}/otp-emf`, { headers });
   }
 
   // Déconnexion

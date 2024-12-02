@@ -1,29 +1,38 @@
-<mat-card-header>
-  <mat-card-title class="m-b-0">Bienvenue sur APNOV</mat-card-title>
-</mat-card-header><br><br>
+<body>
+  
+  <mat-card-header>
+    <mat-card-title class="m-b-0"><h1 style="justify-content: center;">Bienvenue sur APNOV:</h1></mat-card-title>
+  </mat-card-header><br><br>
 
-<mat-card-content class="card-body shadow-5 text-center">
-  <mat-card class="b-1 shadow-none" style="max-width: 400px; margin: auto;">
-    <mat-card-content>
-      <h2>CONNEXION</h2>
-      <form (ngSubmit)="onSubmit(loginForm)" #loginForm="ngForm">
-        <mat-label class="f-w-600 m-b-8 d-block">Nom d'utilisateur</mat-label>
-          <mat-form-field appearance="outline" class="w-100" color="primary">
-            <input matInput id="username" type="text" class="form-control" required [(ngModel)]="username" name="username"/>
-          </mat-form-field>
-      
-        <mat-label class="f-w-600 m-b-8 d-block">Mot de passe</mat-label>
-          <mat-form-field appearance="outline" class="w-100" color="primary">
-            <input matInput [type]="showPassword ? 'text' : 'password'"    id="Password" class="form-control" required [(ngModel)]="password" name="Password"/>
-            <button mat-icon-button matSuffix (click)="togglePasswordVisibility()">
-              <mat-icon> {{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+  <mat-card-content class="card-body shadow-5 text-center">
+    <mat-card class="b-1 shadow-none" style="max-width: 400px; margin: auto;">
+      <mat-card-content>
+        <h2>CONNEXION</h2>
+        <form (ngSubmit)="onSubmit(loginForm)" #loginForm="ngForm">
+          <mat-label class="f-w-600 m-b-8 d-block">Nom d'utilisateur</mat-label>
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <input matInput id="username" type="text" class="form-control" required [(ngModel)]="username" name="username"/>
+            </mat-form-field>
+        
+          <mat-label class="f-w-600 m-b-8 d-block">Mot de passe</mat-label>
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <input matInput [type]="showPassword ? 'text' : 'password'"    id="Password" class="form-control" required [(ngModel)]="password" name="Password"/>
+              <button mat-icon-button matSuffix (click)="togglePasswordVisibility()">
+                <mat-icon> {{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </mat-form-field>
+            <div *ngIf="errorMessage" style="color: red; margin-top: 10px;">
+              {{ errorMessage }}
+            </div><br>
+            <!-- <button mat-flat-button color="primary" type="submit">Se connecter</button> -->
+            <button mat-flat-button color="primary" type="submit" [disabled]="isLoading">
+              <ng-container *ngIf="isLoading; else loginText">
+                <mat-spinner diameter="20" color="accent"></mat-spinner>
+              </ng-container>
+              <ng-template #loginText>Se connecter</ng-template>
             </button>
-          </mat-form-field>
-          <div *ngIf="errorMessage" style="color: red; margin-top: 10px;">
-            {{ errorMessage }}
-          </div><br>
-          <button mat-flat-button color="primary" type="submit">Se connecter</button>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</mat-card-content>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </mat-card-content>
+<body>
